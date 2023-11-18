@@ -46,12 +46,11 @@ class Classifier:
 
     def classify_with_progress(self, test_points):
         total_points = len(test_points)
-        progress_step = total_points // 10  # Aktualizace každých 10 %
+        progress_step = total_points // 10
 
         for i in range(total_points):
             self.classify(test_points[i][0], test_points[i][1])
 
-            # Zobrazení stavu na konzoli
             if (i + 1) % progress_step == 0:
                 progress = ((i + 1) / total_points) * 100
                 print(f"Status: {progress:.0f}%")
