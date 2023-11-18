@@ -4,6 +4,7 @@ from utils.Generator import generate_test_points
 from utils.Timer import Timer
 
 # TODO:: Add colors to output
+# TODO:: Add argument to change initial points
 
 if __name__ == '__main__':
     args = Args()

@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-from utils.Constants import DEFAULT_K
+from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP
 from utils.Generator import generate_initial_points
 
 
@@ -44,9 +44,12 @@ class Classifier:
         self.add_point(x, y, max_class)  # Add a classified point to the space
         return max_class
 
-    def classify_with_progress(self, test_points):
+    def classify_with_progress(self, test_points, percentage_step=None):
+        if percentage_step is None:
+            percentage_step = PROGRESS_PERCENTAGE_STEP
+
         total_points = len(test_points)
-        progress_step = total_points // 10
+        progress_step = total_points // (100 // percentage_step)
 
         for i in range(total_points):
             self.classify(test_points[i][0], test_points[i][1])
