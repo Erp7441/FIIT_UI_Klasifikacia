@@ -8,3 +8,5 @@
 .gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
 ?
 venv/.gitignore,e\3\e3477dd90bdeb5404622dde9262d38a1e7d946c5
+?
+venv/pyvenv.cfg,b\0\b0e04816a9971064291cd324e57037faa4a05306
