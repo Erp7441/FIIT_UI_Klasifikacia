@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP
+from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP, VISUALIZE_EMPTY_POINTS
 from utils.Generator import generate_initial_points
 
 
@@ -62,12 +62,15 @@ class Classifier:
         # Dividing the space into smaller squares
         grid_size = 1000
         grid = {}
+
         for color, points in self.points.items():
             grid[color] = {}
             for point in points:
                 grid_x, grid_y = point[0] // grid_size, point[1] // grid_size
+
                 if (grid_x, grid_y) not in grid[color]:
                     grid[color][(grid_x, grid_y)] = []
+
                 grid[color][(grid_x, grid_y)].append(point)
 
         # Search for neighbours near a classified point
@@ -96,6 +99,12 @@ class Classifier:
             x_vals = [point[0] for point in points]
             y_vals = [point[1] for point in points]
             plt.scatter(x_vals, y_vals, color=colors[color], label=color)
+
+        if VISUALIZE_EMPTY_POINTS:
+            # Visualize empty points with gray color
+            x_empty = [point[0] for point in test_points if self.classify(point[0], point[1]) == '']
+            y_empty = [point[1] for point in test_points if self.classify(point[0], point[1]) == '']
+            plt.scatter(x_empty, y_empty, color='gray', label='Empty')
 
         plt.legend()
 

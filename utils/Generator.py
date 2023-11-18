@@ -24,14 +24,16 @@ def generate_test_points(amount_of_points=None):
         x = uniform(-5000, 5000)
         y = uniform(-5000, 5000)
 
-        if x < 500 and y < 500:
-            color = 'R'
-        elif x > -500 and y < 500:
-            color = 'G'
-        elif x < 500 and y > -500:
-            color = 'B'
-        elif x > -500 and y > -500:
-            color = 'P'
+        probability = uniform(0, 1)
+        if probability < 0.99:
+            if x < 500 and y < 500:
+                color = 'R'
+            elif x > -500 and y < 500:
+                color = 'G'
+            elif x < 500 and y > -500:
+                color = 'B'
+            elif x > -500 and y > -500:
+                color = 'P'
         else:
             color = choice(['R', 'G', 'B', 'P'])
 
