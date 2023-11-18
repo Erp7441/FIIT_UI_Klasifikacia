@@ -1,10 +1,11 @@
 from matplotlib import pyplot as plt
 
+from utils.Constants import DEFAULT_K
 from utils.Generator import generate_initial_points
 
 
 class Classifier:
-    def __init__(self, initial_points=None):
+    def __init__(self, k=None, initial_points=None):
         self.points = {'R': [], 'G': [], 'B': [], 'P': []}
 
         if initial_points is None:
@@ -18,14 +19,19 @@ class Classifier:
             for point in points:
                 self.add_point(point[0], point[1], color)
 
-        # TODO:: Visualize initial points
+        if k is None:
+            self.k = DEFAULT_K
+        else:
+            self.k = k
+
+        # TODO:: Visualize initial points?
 
     def add_point(self, x, y, color):
         self.points[color].append((x, y))
 
-    def classify(self, x, y, k=1):
+    def classify(self, x, y):
         # Finding nearest neighbors
-        neighbors = self.find_neighbors(x, y, k)
+        neighbors = self.find_neighbors(x, y)
 
         # Class determination based on the majority of neighbours
         class_count = {'R': 0, 'G': 0, 'B': 0, 'P': 0}
@@ -38,7 +44,7 @@ class Classifier:
         self.add_point(x, y, max_class)  # Add a classified point to the space
         return max_class
 
-    def find_neighbors(self, x, y, k):
+    def find_neighbors(self, x, y):
         # Dividing the space into smaller squares
         grid_size = 1000
         grid = {}
@@ -66,9 +72,9 @@ class Classifier:
                 neighbors.extend(current_grid)
 
         # Returning k nearest neighbours
-        return sorted(neighbors, key=lambda p: ((p[0] - x) ** 2 + (p[1] - y) ** 2))[:k]
+        return sorted(neighbors, key=lambda p: ((p[0] - x) ** 2 + (p[1] - y) ** 2))[:self.k]
 
-    def visualize(self, test_points, title="Visualization of the resulting 2D space"):
+    def visualize(self, test_points, title=None):
         colors = {'R': 'red', 'G': 'green', 'B': 'blue', 'P': 'purple'}
 
         # Visualize each point in a scatter plot
@@ -78,10 +84,14 @@ class Classifier:
             plt.scatter(x_vals, y_vals, color=colors[color], label=color)
 
         # Visualize empty points
-        x_empty = [point[0] for point in test_points if self.classify(point[0], point[1], k=1) == '']
-        y_empty = [point[1] for point in test_points if self.classify(point[0], point[1], k=1) == '']
+        x_empty = [point[0] for point in test_points if self.classify(point[0], point[1]) == '']
+        y_empty = [point[1] for point in test_points if self.classify(point[0], point[1]) == '']
         plt.scatter(x_empty, y_empty, color='gray', label='Empty')
 
         plt.legend()
+
+        if title is None:
+            title = "Visualization of the 2D space with k={0} and t={1}".format(self.k, len(test_points))
+
         plt.title(title)
         plt.show()

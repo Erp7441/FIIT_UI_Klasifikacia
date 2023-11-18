@@ -13,7 +13,10 @@ def generate_initial_points():
     return initial_points
 
 
-def generate_test_points(amount_of_points=AMOUNT_OF_POINTS):
+def generate_test_points(amount_of_points=None):
+    if amount_of_points is None:
+        amount_of_points = AMOUNT_OF_POINTS
+
     test_points = []
     test_colors = []
 
