@@ -83,11 +83,6 @@ class Classifier:
             y_vals = [point[1] for point in points]
             plt.scatter(x_vals, y_vals, color=colors[color], label=color)
 
-        # Visualize empty points
-        x_empty = [point[0] for point in test_points if self.classify(point[0], point[1]) == '']
-        y_empty = [point[1] for point in test_points if self.classify(point[0], point[1]) == '']
-        plt.scatter(x_empty, y_empty, color='gray', label='Empty')
-
         plt.legend()
 
         if title is None:
