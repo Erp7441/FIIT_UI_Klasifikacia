@@ -20,28 +20,28 @@ if __name__ == '__main__':
     print("Classifier created in {0} seconds".format(timer.elapsed_time))
 
     ###########################################################################
-    print("Generating testing points...")
+    print("\nGenerating testing points...")
     timer.start()
 
     # Generating test points
+    # TODO:: remove redundant test_colors?
     test_points, test_colors = generate_test_points(args.amount_of_testing_points)
 
     timer.stop()
     print("{0} Testing points generated in {1} seconds".format(len(test_points), timer.elapsed_time))
 
     ###########################################################################
-    print("Classifying testing points...")
+    print("\nClassifying testing points...")
     timer.start()
 
     # Classifying test points
-    for i in range(len(test_points)):
-        classifier.classify(test_points[i][0], test_points[i][1])
+    classifier.classify_with_progress(test_points)
 
     timer.stop()
     print("{0} Testing points classified in {1} seconds".format(len(test_points), timer.elapsed_time))
 
     ###########################################################################
-    print("Visualizing the result of the 2D space...")
+    print("\nVisualizing the result of the 2D space...")
     timer.start()
 
     # Visualization of the resulting 2D space

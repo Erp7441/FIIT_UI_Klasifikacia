@@ -44,6 +44,18 @@ class Classifier:
         self.add_point(x, y, max_class)  # Add a classified point to the space
         return max_class
 
+    def classify_with_progress(self, test_points):
+        total_points = len(test_points)
+        progress_step = total_points // 10  # Aktualizace každých 10 %
+
+        for i in range(total_points):
+            self.classify(test_points[i][0], test_points[i][1])
+
+            # Zobrazení stavu na konzoli
+            if (i + 1) % progress_step == 0:
+                progress = ((i + 1) / total_points) * 100
+                print(f"Status: {progress:.0f}%")
+
     def find_neighbors(self, x, y):
         # Dividing the space into smaller squares
         grid_size = 1000
