@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="main" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="K1 T5000" type="PythonConfigurationType" factoryName="Python" folderName="Tests">
     <module name="UI_Klasifikacia" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
@@ -13,7 +13,7 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
     <option name="SCRIPT_NAME" value="./main.py" />
-    <option name="PARAMETERS" value="" />
+    <option name="PARAMETERS" value="-k 1 -t 5000" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />
