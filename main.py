@@ -1,6 +1,6 @@
 from classifier.Classifier import Classifier
 from utils.Args import Args
-from utils.Generator import generate_test_points
+from utils.Generator import generate_test_points_with_measurement
 from utils.Timer import Timer
 
 # TODO:: Add colors to output
@@ -12,8 +12,10 @@ def main():
     args = Args()
     timer = Timer()
 
+    test_points = generate_test_points_with_measurement(args.amount_of_testing_points)
+
     if args.tests:
-        run_tests()
+        run_tests(test_points)
         return
 
     print("Creating classifier...")
@@ -23,12 +25,12 @@ def main():
     classifier = Classifier(args.k)
 
     timer.stop()
-    print("Classifier created in {0} seconds".format(timer.elapsed_time))
+    print("Classifier k = {0} created in {1} seconds".format(classifier.k, timer.elapsed_time))
 
-    run_classifier_measurement(classifier, args.amount_of_testing_points)
+    run_classifier_measurement(classifier, test_points)
 
 
-def run_tests(args: Args = None):
+def run_tests(test_points: [] = None):
     timer = Timer()
 
     ###########################################################################
@@ -44,26 +46,14 @@ def run_tests(args: Args = None):
     timer.stop()
     print("Classifier created in {0} seconds".format(timer.elapsed_time))
 
-    amount_of_testing_points = None if args is None else args.amount_of_testing_points
     for classifier in [classifier1, classifier3, classifier7, classifier15]:
-        run_classifier_measurement(classifier, amount_of_testing_points)
+        run_classifier_measurement(classifier, test_points)
 
 
-def run_classifier_measurement(classifier: Classifier, amount_of_testing_points=None):
+def run_classifier_measurement(classifier: Classifier, test_points: [] = None):
     timer = Timer()
 
     print("\nRunning measurement on k = {0} classifier...".format(classifier.k))
-
-    ###########################################################################
-    print("\nGenerating testing points...")
-    timer.start()
-
-    # Generating test points
-    # TODO:: Adapt test_colors according to the task.
-    test_points, test_colors = generate_test_points(amount_of_testing_points)
-
-    timer.stop()
-    print("{0} Testing points generated in {1} seconds".format(len(test_points), timer.elapsed_time))
 
     ###########################################################################
     print("\nClassifying testing points...")

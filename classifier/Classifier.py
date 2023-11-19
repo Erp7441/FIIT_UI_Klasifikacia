@@ -1,12 +1,14 @@
 from matplotlib import pyplot as plt
 
-from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP, VISUALIZE_EMPTY_POINTS
+from classifier.Point import Point
+from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP, VISUALIZE_EMPTY_POINTS, GRID_SIZE, SEARCH_GRID_SIZE
 from utils.Generator import generate_initial_points
 
 
 class Classifier:
     def __init__(self, k=None, initial_points=None):
         self.points = {'R': [], 'G': [], 'B': [], 'P': []}
+        self._all_points = []
 
         if initial_points is None:
             # Generating starting points
@@ -17,17 +19,21 @@ class Classifier:
         # Adding initial points to the space
         for color, points in self.initial_points.items():
             for point in points:
-                self.add_point(point[0], point[1], color)
+                self.add_point_o(point)
 
         if k is None:
             self.k = DEFAULT_K
         else:
             self.k = k
 
-        # TODO:: Visualize initial points?
-
     def add_point(self, x, y, color):
-        self.points[color].append((x, y))
+        point = Point(x, y, color)
+        self._all_points.append(point)
+        self.points[color].append(point)
+
+    def add_point_o(self, point: Point):
+        self._all_points.append(point)
+        self.points[point.color].append(point)
 
     def classify(self, x, y):
         # Finding nearest neighbors
@@ -36,15 +42,16 @@ class Classifier:
         # Class determination based on the majority of neighbours
         class_count = {'R': 0, 'G': 0, 'B': 0, 'P': 0}
         for neighbor in neighbors:
-            for color, points in self.points.items():
-                if neighbor in points:
-                    class_count[color] += 1
+            class_count[neighbor.color] += 1
 
         max_class = max(class_count, key=class_count.get)
         self.add_point(x, y, max_class)  # Add a classified point to the space
         return max_class
 
-    def classify_with_progress(self, test_points, percentage_step=None):
+    def classify_with_progress(self, test_points: [] = None, percentage_step=None):
+        if test_points is None:
+            return None
+
         if percentage_step is None:
             percentage_step = PROGRESS_PERCENTAGE_STEP
 
@@ -52,58 +59,46 @@ class Classifier:
         progress_step = total_points // (100 // percentage_step)
 
         for i in range(total_points):
-            self.classify(test_points[i][0], test_points[i][1])
+            self.classify(test_points[i].x, test_points[i].y)
 
             if (i + 1) % progress_step == 0:
                 progress = ((i + 1) / total_points) * 100
                 print(f"Status: {progress:.0f}%")
 
     def find_neighbors(self, x, y):
-        # Dividing the space into smaller squares
-        grid_size = 1000
-        grid = {}
-
-        for color, points in self.points.items():
-            grid[color] = {}
-            for point in points:
-                grid_x, grid_y = point[0] // grid_size, point[1] // grid_size
-
-                if (grid_x, grid_y) not in grid[color]:
-                    grid[color][(grid_x, grid_y)] = []
-
-                grid[color][(grid_x, grid_y)].append(point)
-
-        # Search for neighbours near a classified point
         neighbors = []
 
         # Getting x and y coordinates relative to the grid
-        grid_x, grid_y = x // grid_size, y // grid_size
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                current_grid = (
-                    grid.get('R', {}).get((grid_x + i, grid_y + j), []) +
-                    grid.get('G', {}).get((grid_x + i, grid_y + j), []) +
-                    grid.get('B', {}).get((grid_x + i, grid_y + j), []) +
-                    grid.get('P', {}).get((grid_x + i, grid_y + j), [])
-                )
-                neighbors.extend(current_grid)
+        target_grid_x, target_grid_y = x // GRID_SIZE, y // GRID_SIZE
 
-        # Returning k nearest neighbours
-        return sorted(neighbors, key=lambda p: ((p[0] - x) ** 2 + (p[1] - y) ** 2))[:self.k]
+        # Search for neighbours near a classified point within a GRID_SIZE radius
+        for point in self._all_points:
+            grid_x, grid_y = point.x // GRID_SIZE, point.y // GRID_SIZE
+
+            # Search if point falls within 3x3 grid (relative grid values of x and y)
+            if (
+                (grid_x - 1 <= target_grid_x <= grid_x + SEARCH_GRID_SIZE - 1) and
+                (grid_y - 1 <= target_grid_y <= grid_y + SEARCH_GRID_SIZE - 1)
+            ):
+                neighbors.append(point)
+
+        # Returning k nearest neighbours (Sorting by Pytagoras theorem)
+        return sorted(neighbors, key=lambda p: ((p.x - x) ** 2 + (p.y - y) ** 2))[:self.k]
 
     def visualize(self, test_points, title=None):
         colors = {'R': 'red', 'G': 'green', 'B': 'blue', 'P': 'purple'}
 
-        # Visualize each point in a scatter plot
+        # Visualize points color by color
         for color, points in self.points.items():
-            x_vals = [point[0] for point in points]
-            y_vals = [point[1] for point in points]
+            x_vals = [point.x for point in points]
+            y_vals = [point.y for point in points]
             plt.scatter(x_vals, y_vals, color=colors[color], label=color)
 
+        # TODO:: Check this if condition
         if VISUALIZE_EMPTY_POINTS:
             # Visualize empty points with gray color
-            x_empty = [point[0] for point in test_points if self.classify(point[0], point[1]) == '']
-            y_empty = [point[1] for point in test_points if self.classify(point[0], point[1]) == '']
+            x_empty = [point.x for point in test_points if self.classify(point.x, point.y) == '']
+            y_empty = [point.y for point in test_points if self.classify(point.x, point.y) == '']
             plt.scatter(x_empty, y_empty, color='gray', label='Empty')
 
         plt.legend()
@@ -113,3 +108,9 @@ class Classifier:
 
         plt.title(title)
         plt.show()
+
+    def get_success_rate(self, test_points: [] = None):
+        # TODO:: Implement
+        if test_points is None:
+            return None
+        return None
