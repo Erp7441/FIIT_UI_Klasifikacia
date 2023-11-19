@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 
 from classifier.Point import Point
-from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP, VISUALIZE_EMPTY_POINTS, GRID_SIZE, SEARCH_GRID_SIZE
+from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP, VISUALIZE_EMPTY_POINTS, GRID_SIZE, SUB_GRID_SIZE
 from utils.Generator import generate_initial_points
 
 
@@ -68,17 +68,18 @@ class Classifier:
     def find_neighbors(self, x, y):
         neighbors = []
 
-        # Getting x and y coordinates relative to the grid
+        # Getting x and y coordinates relative to the grid (shrinking the x and y values)
         target_grid_x, target_grid_y = x // GRID_SIZE, y // GRID_SIZE
 
-        # Search for neighbours near a classified point within a GRID_SIZE radius
+        # Search for neighbours near a classified point within a GRID_SIZE radius (nearest shrink value to the main one)
         for point in self._all_points:
             grid_x, grid_y = point.x // GRID_SIZE, point.y // GRID_SIZE
 
-            # Search if point falls within 3x3 grid (relative grid values of x and y)
+            # Search if point falls within x times x subgrid (relative grid values of x and y)
+            search_size = SUB_GRID_SIZE // 2
             if (
-                (grid_x - 1 <= target_grid_x <= grid_x + SEARCH_GRID_SIZE - 1) and
-                (grid_y - 1 <= target_grid_y <= grid_y + SEARCH_GRID_SIZE - 1)
+                (grid_x - search_size <= target_grid_x <= grid_x + search_size) and
+                (grid_y - search_size <= target_grid_y <= grid_y + search_size)
             ):
                 neighbors.append(point)
 
