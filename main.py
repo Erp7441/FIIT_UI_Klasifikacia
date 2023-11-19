@@ -1,6 +1,6 @@
+from classifier.ClassifierMeasure import run_creation_measurement, run_classify_measurement
 from utils.Args import Args
 from utils.Generator import generate_test_points_with_measurement
-from classifier.ClassifierMeasure import run_creation_measurement, run_classify_measurement
 
 
 def main():
