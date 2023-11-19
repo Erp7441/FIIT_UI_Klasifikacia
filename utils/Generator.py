@@ -45,6 +45,7 @@ def generate_test_points(amount_of_points=None):
     if amount_of_points is None:
         amount_of_points = AMOUNT_OF_POINTS
 
+    # TODO:: Check if the generated points are unique
     test_points = []
 
     for _ in range(amount_of_points):
