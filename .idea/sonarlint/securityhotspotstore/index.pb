@@ -44,3 +44,7 @@ C
 utils/Timer.py,c\3\c302b970d6de666a23fdb26c910a6eaab974334d
 C
 classifier/Point.py,4\1\416c326b3ea7c3f9486c802c8caeebeb1567c579
+@
+utils/Measure.py,7\1\713070869b28d82b6b7ae0848de8cbdf46e54738
+O
+classifier/ClassifierMeasure.py,3\c\3c72442e8bdb3e24d842f20605bd896de5a62a4d

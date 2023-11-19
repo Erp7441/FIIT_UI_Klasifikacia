@@ -9,6 +9,7 @@ class Classifier:
     def __init__(self, k=None, initial_points=None):
         self.points = {'R': [], 'G': [], 'B': [], 'P': []}
         self._all_points = []
+        self.unclassified_points = []  # For visualization
 
         if initial_points is None:
             # Generating starting points
@@ -30,14 +31,21 @@ class Classifier:
         point = Point(x, y, color)
         self._all_points.append(point)
         self.points[color].append(point)
+        return point
 
     def add_point_o(self, point: Point):
         self._all_points.append(point)
         self.points[point.color].append(point)
+        return point
 
     def classify(self, x, y):
         # Finding nearest neighbors
         neighbors = self.find_neighbors(x, y)
+
+        # If no neighbors were found. Point cannot be classified.
+        if neighbors is None or len(neighbors) == 0:
+            self.unclassified_points.append(Point(x, y, None))
+            return
 
         # Class determination based on the majority of neighbours
         class_count = {'R': 0, 'G': 0, 'B': 0, 'P': 0}
@@ -46,7 +54,6 @@ class Classifier:
 
         max_class = max(class_count, key=class_count.get)
         self.add_point(x, y, max_class)  # Add a classified point to the space
-        return max_class
 
     def classify_with_progress(self, test_points: [] = None, percentage_step=None):
         if test_points is None:
@@ -95,11 +102,10 @@ class Classifier:
             y_vals = [point.y for point in points]
             plt.scatter(x_vals, y_vals, color=colors[color], label=color)
 
-        # TODO:: Check this if condition
         if VISUALIZE_EMPTY_POINTS:
             # Visualize empty points with gray color
-            x_empty = [point.x for point in test_points if self.classify(point.x, point.y) == '']
-            y_empty = [point.y for point in test_points if self.classify(point.x, point.y) == '']
+            x_empty = [point.x for point in self.unclassified_points]
+            y_empty = [point.y for point in self.unclassified_points]
             plt.scatter(x_empty, y_empty, color='gray', label='Empty')
 
         plt.legend()
@@ -111,7 +117,8 @@ class Classifier:
         plt.show()
 
     def get_success_rate(self, test_points: [] = None):
-        # TODO:: Implement
+        # TODO:: Implement (compare the return value of the classify function with the generated point. Based on these comparisons, evaluate the success of your classifier for the experiment.)
+
         if test_points is None:
             return None
         return None

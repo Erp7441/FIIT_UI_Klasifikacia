@@ -1,16 +1,12 @@
-from classifier.Classifier import Classifier
 from utils.Args import Args
 from utils.Generator import generate_test_points_with_measurement
-from utils.Timer import Timer
+from classifier.ClassifierMeasure import run_creation_measurement, run_classify_measurement
 
 # TODO:: Add colors to output
-# TODO:: Add argument to change initial points
-# TODO:: Compare the return value of the classify function with the generated point. Based on these comparisons, evaluate the success of your classifier for the experiment.
 
 
 def main():
     args = Args()
-    timer = Timer()
 
     test_points = generate_test_points_with_measurement(args.amount_of_testing_points)
 
@@ -18,62 +14,19 @@ def main():
         run_tests(test_points)
         return
 
-    print("Creating classifier...")
-    timer.start()
-
-    # Creating classifier
-    classifier = Classifier(args.k)
-
-    timer.stop()
-    print("Classifier k = {0} created in {1} seconds".format(classifier.k, timer.elapsed_time))
-
-    run_classifier_measurement(classifier, test_points)
+    classifier = run_creation_measurement(args.k)
+    run_classify_measurement(classifier, test_points)
 
 
 def run_tests(test_points: [] = None):
-    timer = Timer()
 
-    ###########################################################################
-    print("Creating classifier...")
-    timer.start()
+    classifiers = [
+        run_creation_measurement(1), run_creation_measurement(3),
+        run_creation_measurement(7), run_creation_measurement(15)
+    ]
 
-    # Creating classifier
-    classifier1 = Classifier(1)
-    classifier3 = Classifier(3)
-    classifier7 = Classifier(7)
-    classifier15 = Classifier(15)
-
-    timer.stop()
-    print("Classifier created in {0} seconds".format(timer.elapsed_time))
-
-    for classifier in [classifier1, classifier3, classifier7, classifier15]:
-        run_classifier_measurement(classifier, test_points)
-
-
-def run_classifier_measurement(classifier: Classifier, test_points: [] = None):
-    timer = Timer()
-
-    print("\nRunning measurement on k = {0} classifier...".format(classifier.k))
-
-    ###########################################################################
-    print("\nClassifying testing points...")
-    timer.start()
-
-    # Classifying test points
-    classifier.classify_with_progress(test_points)
-
-    timer.stop()
-    print("{0} Testing points classified in {1} seconds".format(len(test_points), timer.elapsed_time))
-
-    ###########################################################################
-    print("\nVisualizing the result of the 2D space...")
-    timer.start()
-
-    # Visualization of the resulting 2D space
-    classifier.visualize(test_points)
-
-    timer.stop()
-    print("Visualization finished in {0} seconds".format(timer.elapsed_time))
+    for classifier in classifiers:
+        run_classify_measurement(classifier, test_points)
 
 
 if __name__ == '__main__':
