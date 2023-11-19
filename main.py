@@ -2,6 +2,8 @@ from classifier.ClassifierMeasure import run_creation_measurement, run_classify_
 from utils.Args import Args
 from utils.Generator import generate_test_points_with_measurement
 
+# TODO:: Add visualisation in loop for better visualisation of the progress?
+
 
 def main():
     args = Args()
