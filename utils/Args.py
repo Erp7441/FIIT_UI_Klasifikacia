@@ -13,6 +13,7 @@ class Args:
 
         )
 
+        # TODO:: Add more args for constants?
         general_group = self.parser.add_argument_group("General")
         general_group.add_argument("--amount-of-neighbors", "-k", type=int, dest="k", help="Amount of neighbors to look for")
         general_group.add_argument("--amount-of-testing-points", "-t", type=int, dest="amount_of_testing_points", help="Amount of testing points to generate")

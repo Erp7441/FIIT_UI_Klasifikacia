@@ -1,26 +1,23 @@
 from matplotlib import pyplot as plt
 
 from classifier.Point import Point
-from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP, VISUALIZE_EMPTY_POINTS, GRID_SIZE, SUB_GRID_SIZE
+from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP, GRID_SIZE, SUB_GRID_SIZE, UNCLASSIFIED_POINT_COLOR, \
+    UNCLASSIFIED_POINT_LABEL
 from utils.Generator import generate_initial_points
 
 
 class Classifier:
-    def __init__(self, k=None, initial_points=None):
+    def __init__(self, k=None):
         self.points = {'R': [], 'G': [], 'B': [], 'P': []}
-        self._all_points = []
-        self.unclassified_points = []  # For visualization
+        self.initial_points = generate_initial_points(list)
 
-        if initial_points is None:
-            # Generating starting points
-            self.initial_points = generate_initial_points()
-        else:
-            self.initial_points = initial_points
+        self._all_points = []
+        self._all_classified_points = []
+        self._all_unclassified_points = []
 
         # Adding initial points to the space
-        for color, points in self.initial_points.items():
-            for point in points:
-                self.add_point_o(point)
+        for point in self.initial_points:
+            self.add_point_o(point)
 
         if k is None:
             self.k = DEFAULT_K
@@ -31,11 +28,19 @@ class Classifier:
         point = Point(x, y, color)
         self._all_points.append(point)
         self.points[color].append(point)
+        self._all_classified_points.append(point)
         return point
 
     def add_point_o(self, point: Point):
         self._all_points.append(point)
         self.points[point.color].append(point)
+        self._all_classified_points.append(point)
+        return point
+
+    def add_unclassified_point(self, x, y):
+        point = Point(x, y)
+        self._all_points.append(point)
+        self._all_unclassified_points.append(point)
         return point
 
     def classify(self, x, y):
@@ -44,8 +49,7 @@ class Classifier:
 
         # If no neighbors were found. Point cannot be classified.
         if neighbors is None or len(neighbors) == 0:
-            self.unclassified_points.append(Point(x, y, None))
-            return
+            return self.add_unclassified_point(x, y)
 
         # Class determination based on the majority of neighbours
         class_count = {'R': 0, 'G': 0, 'B': 0, 'P': 0}
@@ -53,7 +57,7 @@ class Classifier:
             class_count[neighbor.color] += 1
 
         max_class = max(class_count, key=class_count.get)
-        self.add_point(x, y, max_class)  # Add a classified point to the space
+        return self.add_point(x, y, max_class)  # Add a classified point to the space
 
     def classify_with_progress(self, test_points: [] = None, percentage_step=None):
         if test_points is None:
@@ -66,7 +70,8 @@ class Classifier:
         progress_step = total_points // (100 // percentage_step)
 
         for i in range(total_points):
-            self.classify(test_points[i].x, test_points[i].y)
+            point = self.classify(test_points[i].x, test_points[i].y)
+            point.parent_index = i  # For calculating success rate of classification
 
             if (i + 1) % progress_step == 0:
                 progress = ((i + 1) / total_points) * 100
@@ -79,7 +84,7 @@ class Classifier:
         target_grid_x, target_grid_y = x // GRID_SIZE, y // GRID_SIZE
 
         # Search for neighbours near a classified point within a GRID_SIZE radius (nearest shrink value to the main one)
-        for point in self._all_points:
+        for point in self._all_classified_points:
             grid_x, grid_y = point.x // GRID_SIZE, point.y // GRID_SIZE
 
             # Search if point falls within x times x subgrid (relative grid values of x and y)
@@ -102,11 +107,10 @@ class Classifier:
             y_vals = [point.y for point in points]
             plt.scatter(x_vals, y_vals, color=colors[color], label=color)
 
-        if VISUALIZE_EMPTY_POINTS:
-            # Visualize empty points with gray color
-            x_empty = [point.x for point in self.unclassified_points]
-            y_empty = [point.y for point in self.unclassified_points]
-            plt.scatter(x_empty, y_empty, color='gray', label='Empty')
+        # Visualize empty points with gray color
+        x_empty = [point.x for point in self._all_unclassified_points]
+        y_empty = [point.y for point in self._all_unclassified_points]
+        plt.scatter(x_empty, y_empty, color=UNCLASSIFIED_POINT_COLOR, label=UNCLASSIFIED_POINT_LABEL)
 
         plt.legend()
 
@@ -117,8 +121,22 @@ class Classifier:
         plt.show()
 
     def get_success_rate(self, test_points: [] = None):
-        # TODO:: Implement (compare the return value of the classify function with the generated point. Based on these comparisons, evaluate the success of your classifier for the experiment.)
-
         if test_points is None:
             return None
-        return None
+
+        all_points_except_initials = [point for point in self._all_points if point not in self.initial_points]
+        classified = {
+            "Correctly": 0,
+            "Incorrectly": 0
+        }
+
+        for point in all_points_except_initials:
+            if point.color == test_points[point.parent_index].color:
+                classified["Correctly"] += 1
+            else:
+                classified["Incorrectly"] += 1
+
+        # Success rate %
+        success_rate = (100 * classified["Correctly"]) / (classified["Correctly"] + classified["Incorrectly"])
+
+        return classified, success_rate
