@@ -19,6 +19,8 @@ def main():
 
 def run_tests(test_points: [] = None):
 
+    # TODO:: Run timer on how long did the tests took?
+
     print("\n", end='')
     classifiers = [
         run_creation_measurement(1), run_creation_measurement(3),
