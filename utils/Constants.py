@@ -12,3 +12,5 @@ BAD_SUCCESS_RATE = 80  # % (or lower)
 ROUNDING_PRECISION = 3
 
 DEBUG = True
+
+SEARCH_SIZE = SUB_GRID_SIZE // 2  # Search size for nearest neighbors

@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 
 from classifier.Point import Point
-from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP, GRID_SIZE, SUB_GRID_SIZE, UNCLASSIFIED_POINT_COLOR, \
+from utils.Constants import DEFAULT_K, PROGRESS_PERCENTAGE_STEP, GRID_SIZE, SEARCH_SIZE, UNCLASSIFIED_POINT_COLOR, \
     UNCLASSIFIED_POINT_LABEL
 from utils.Generator import generate_initial_points
 
@@ -88,10 +88,9 @@ class Classifier:
             grid_x, grid_y = point.x // GRID_SIZE, point.y // GRID_SIZE
 
             # Search if point falls within x times x subgrid (relative grid values of x and y)
-            search_size = SUB_GRID_SIZE // 2
             if (
-                (grid_x - search_size <= target_grid_x <= grid_x + search_size) and
-                (grid_y - search_size <= target_grid_y <= grid_y + search_size)
+                (grid_x - SEARCH_SIZE <= target_grid_x <= grid_x + SEARCH_SIZE) and
+                (grid_y - SEARCH_SIZE <= target_grid_y <= grid_y + SEARCH_SIZE)
             ):
                 neighbors.append(point)
 
