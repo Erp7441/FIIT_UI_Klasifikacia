@@ -29,7 +29,7 @@ def run_classify_measurement(classifier: Classifier, test_points: [] = None):
 
     rounded_percentage = round(classifier_success_rate, ROUNDING_PRECISION)
     print_percentage(
-        "Success rate: {0}%".format(rounded_percentage), "Success rate: {0}%".format(rounded_percentage),
+        "Success rate: {0}%".format(rounded_percentage),
         percentage=classifier_success_rate, good=GOOD_SUCCESS_RATE, bad=BAD_SUCCESS_RATE
     )
 
